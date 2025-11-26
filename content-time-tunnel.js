@@ -1,10 +1,9 @@
 // Content script for time-tunnel page
-// This script monitors for verification code input and sends it to background
+// This script injects XHR interceptor and monitors for verification code
 
 // ==================== CONFIG - EDIT THESE SELECTORS ====================
 const CONFIG = {
-  // TODO: Replace with actual input selector from time-tunnel page
-  // Example: 'input[name="verification_code"]' or 'input#code' or '.verification-input'
+  // Input selector for fallback DOM monitoring (optional)
   CODE_INPUT_SELECTOR: 'span.border.border-dashed',
   
   // Check interval in milliseconds (50ms = very fast, 20 checks per second)
@@ -14,7 +13,13 @@ const CONFIG = {
   STOP_AFTER_SEND: true,
   
   // Invalid codes to ignore (continue searching if these values found)
-  INVALID_CODES: ['631V3532KW',"OIUYGS3547"]
+  INVALID_CODES: ['631V3532KW', 'OIUYGS3547'],
+  
+  // Enable XHR interception (recommended)
+  ENABLE_XHR_INTERCEPTION: true,
+  
+  // Enable DOM monitoring as fallback
+  ENABLE_DOM_MONITORING: false  // Disabled - using XHR interception instead
 };
 // =======================================================================
 
@@ -23,12 +28,77 @@ console.log('Time-tunnel content script loaded');
 let lastCodeSent = null;
 let checkInterval = null;
 
-// Start monitoring immediately
+// Inject script to intercept XHR/Fetch requests
+function injectXHRInterceptor() {
+  if (!CONFIG.ENABLE_XHR_INTERCEPTION) return;
+  
+  console.log('🚀 Injecting XHR interceptor...');
+  
+  const script = document.createElement('script');
+  script.src = chrome.runtime.getURL('injected-script.js');
+  script.onload = function() {
+    console.log('✅ XHR interceptor script tag loaded');
+    this.remove();
+  };
+  script.onerror = function() {
+    console.error('❌ Failed to load XHR interceptor');
+  };
+  (document.head || document.documentElement).appendChild(script);
+}
+
+// Listen for messages from injected script (via window.postMessage)
+window.addEventListener('message', function(event) {
+  // Only accept messages from same origin
+  if (event.source !== window) return;
+  
+  // Check if it's our message
+  if (event.data.type === 'TECHNOLIFE_CODE_FOUND' && event.data.source === 'injected-script') {
+    const code = event.data.code;
+    
+    console.log('📨 Received message from injected script:', code);
+    
+    // Check if code is valid
+    const isValidCode = code && 
+                        code.trim() !== '' && 
+                        !CONFIG.INVALID_CODES.includes(code.trim()) &&
+                        code !== lastCodeSent;
+    
+    if (isValidCode) {
+      console.log('✅ Valid verification code received from XHR:', code);
+      lastCodeSent = code;
+      
+      // Send code to background script
+      chrome.runtime.sendMessage({
+        type: 'CODE_FOUND',
+        code: code.trim()
+      }, (response) => {
+        if (response && response.success) {
+          console.log('✅ Code sent to background successfully');
+          
+          // Stop DOM monitoring if enabled
+          if (CONFIG.STOP_AFTER_SEND && checkInterval) {
+            clearInterval(checkInterval);
+            checkInterval = null;
+            console.log('Monitoring stopped - code sent successfully');
+          }
+        }
+      });
+    } else if (code && CONFIG.INVALID_CODES.includes(code.trim())) {
+      console.log('❌ Invalid code detected from XHR, ignoring:', code.trim());
+    }
+  }
+});
+
+// Start monitoring DOM (fallback method)
 function startMonitoring() {
+  if (!CONFIG.ENABLE_DOM_MONITORING) return;
+  
   // Clear any existing interval
   if (checkInterval) {
     clearInterval(checkInterval);
   }
+  
+  console.log('Starting DOM monitoring as fallback...');
   
   // Check every 50ms for the input element
   checkInterval = setInterval(() => {
@@ -69,8 +139,11 @@ function startMonitoring() {
       }
     }
     
-  }, CONFIG.CHECK_INTERVAL_MS); // Check every 50 milliseconds for minimal latency
+  }, CONFIG.CHECK_INTERVAL_MS);
 }
+
+// Initialize: Inject XHR interceptor first
+injectXHRInterceptor();
 
 // Start monitoring when page loads
 if (document.readyState === 'loading') {
