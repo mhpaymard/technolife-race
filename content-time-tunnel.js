@@ -14,7 +14,7 @@ const CONFIG = {
   STOP_AFTER_SEND: true,
   
   // Invalid codes to ignore (continue searching if these values found)
-  INVALID_CODES: ['631V3532KW']
+  INVALID_CODES: ['631V3532KW',"OIUYGS3547"]
 };
 // =======================================================================
 
@@ -98,3 +98,17 @@ window.addEventListener('beforeunload', () => {
     clearInterval(checkInterval);
   }
 });
+
+
+const clickEvent = new MouseEvent('click', {
+  view: window,
+  bubbles: true,
+  cancelable: true
+});
+
+setTimeout(() => {
+  const button = document.querySelectorAll("button[type='button']")[0];
+  setInterval(()=>{
+    button.dispatchEvent(clickEvent);
+  })
+},1000)
