@@ -90,7 +90,7 @@ function insertCodeAndSubmit(code) {
             });
           } else if (retryCount < CONFIG.MAX_RETRIES) {
             console.log('Discount not applied, clicking submit again...');
-            submitButton.click();
+            // submitButton.click();
             retryCount++;
           } else {
             console.warn('⚠️ Max retries reached');
