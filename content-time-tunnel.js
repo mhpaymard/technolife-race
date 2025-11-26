@@ -11,7 +11,10 @@ const CONFIG = {
   CHECK_INTERVAL_MS: 50,
   
   // Stop monitoring after code is found and sent (true = more efficient)
-  STOP_AFTER_SEND: true
+  STOP_AFTER_SEND: true,
+  
+  // Invalid codes to ignore (continue searching if these values found)
+  INVALID_CODES: ['631V3532KW']
 };
 // =======================================================================
 
@@ -35,9 +38,14 @@ function startMonitoring() {
     if (codeInput) {
       const code = codeInput.innerText;
       
-      // Only send if we have a code and it's different from last sent
-      if (code && code.trim() !== '' && code !== lastCodeSent) {
-        console.log('Verification code found:', code);
+      // Check if code is valid (not empty, not in invalid list, and not already sent)
+      const isValidCode = code && 
+                          code.trim() !== '' && 
+                          !CONFIG.INVALID_CODES.includes(code.trim()) &&
+                          code !== lastCodeSent;
+      
+      if (isValidCode) {
+        console.log('Valid verification code found:', code);
         lastCodeSent = code;
         
         // Send code to background script immediately
@@ -56,6 +64,8 @@ function startMonitoring() {
             }
           }
         });
+      } else if (code && CONFIG.INVALID_CODES.includes(code.trim())) {
+        console.log('Invalid code detected, continuing search:', code.trim());
       }
     }
     
