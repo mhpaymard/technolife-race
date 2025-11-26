@@ -25,10 +25,10 @@ let codeInserted = false;
 
 // Function to insert code into input and submit
 function insertCodeAndSubmit(code) {
-  if (codeInserted) {
-    console.log('Code already inserted, skipping');
-    return;
-  }
+//   if (codeInserted) {
+//     console.log('Code already inserted, skipping');
+//     return;
+//   }
   
   const codeInput = document.querySelector(CONFIG.CODE_INPUT_SELECTOR);
   
