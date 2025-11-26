@@ -15,7 +15,7 @@ const CONFIG = {
   // Minimum recommended: 50ms (balance between speed and reliability)
   // If page uses React/Vue: 100ms safer
   // Plain HTML form: can try 30ms
-  SUBMIT_DELAY_MS: 50,
+  SUBMIT_DELAY_MS: 25,
   
   // Delay between retries when checking if discount is applied (milliseconds)
   RETRY_DELAY_MS: 100,
@@ -40,8 +40,6 @@ const clickEvent = new MouseEvent('click', {
 function isOffAvailable() {
   const priceSectionDiv = document.querySelector("div.rounded-2xl.bg-white.p-8.pb-6.shadow-1200");
   if (priceSectionDiv && priceSectionDiv.innerHTML.includes("کد تخفیف")) {
-    const paymentButton = [...document.querySelectorAll('button[type="button"')]?.filter(b => b?.innerHTML?.includes("پرداخت"))?.[0];
-    paymentButton?.dispatchEvent(clickEvent);
     return true;
   }
   return false;
@@ -84,7 +82,8 @@ function insertCodeAndSubmit(code) {
             console.log('✅ Discount applied successfully!');
             clearInterval(checkInterval);
             codeInserted = true;
-            
+            const paymentButton = [...document.querySelectorAll('button[type="button"')]?.filter(b => b?.innerHTML?.includes("پرداخت"))?.[0];
+            paymentButton?.dispatchEvent(clickEvent);
             chrome.runtime.sendMessage({
               type: 'CODE_INSERTED',
               success: true
