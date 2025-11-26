@@ -34,7 +34,7 @@ function startMonitoring() {
   // Check every 50ms for the input element
   checkInterval = setInterval(() => {
 
-    const codeInput = document.querySelectorAll(CONFIG.CODE_INPUT_SELECTOR)?.at(-1);
+    const codeInput = document.querySelector(CONFIG.CODE_INPUT_SELECTOR);
 
     if (codeInput) {
       const code = codeInput.innerText;
