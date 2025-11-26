@@ -18,7 +18,7 @@ const CONFIG = {
   SUBMIT_DELAY_MS: 50,
   
   // Delay between retries when checking if discount is applied (milliseconds)
-  RETRY_DELAY_MS: 200,
+  RETRY_DELAY_MS: 100,
   
   // Maximum number of retries for checking discount application
   MAX_RETRIES: 100

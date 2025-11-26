@@ -109,6 +109,9 @@ const clickEvent = new MouseEvent('click', {
 setTimeout(() => {
   setInterval(()=>{
     const button = document.querySelectorAll("button[type='button']")?.[0];
+    button?.classList?.remove("disabled:cursor-not-allowed");
+    button?.classList?.remove("disabled:opacity-50");
+    button?.removeAttribute("disabled");
     button?.dispatchEvent(clickEvent);
   },50);
 },1000)
