@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technolife Auto Code</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 15px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      color: white;
+    }
+    
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+    
+    h1 {
+      margin: 0 0 15px 0;
+      font-size: 18px;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .status {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    .status.active {
+      background: rgba(76, 175, 80, 0.3);
+      border: 2px solid #4CAF50;
+    }
+    
+    .info {
+      font-size: 12px;
+      line-height: 1.6;
+      opacity: 0.9;
+      text-align: center;
+    }
+    
+    .code-display {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      font-weight: bold;
+      min-height: 24px;
+    }
+    
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Technolife Auto Code</h1>
+    
+    <div class="status" id="status">
+      <span id="statusText">در حال بررسی...</span>
+    </div>
+    
+    <div class="code-display" id="codeDisplay">
+      منتظر کد...
+    </div>
+    
+    <div class="info">
+      این افزونه به طور خودکار کد تایید را از صفحه time-tunnel به صفحه payment منتقل می‌کند.
+    </div>
+    
+    <button class="btn" id="clearBtn">پاک کردن کد</button>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

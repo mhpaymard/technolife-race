@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Technolife Auto Code Transfer",
+  "version": "1.0",
+  "description": "Auto transfer verification code from time-tunnel to payment page",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://cmp.technolife.com/*",
+    "https://www.technolife.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://cmp.technolife.com/time-tunnel/*",
+        "https://cmp.technolife.com/time-tunnel"
+      ],
+      "js": ["content-time-tunnel.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.technolife.com/payment/*",
+        "https://www.technolife.com/payment"
+      ],
+      "js": ["content-payment.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
