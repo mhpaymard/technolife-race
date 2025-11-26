@@ -10,7 +10,8 @@
   ],
   "host_permissions": [
     "https://cmp.technolife.com/*",
-    "https://www.technolife.com/*"
+    "https://www.technolife.com/*",
+    "https://technolife.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -31,12 +32,6 @@
       ],
       "js": ["content-payment.js"],
       "run_at": "document_idle"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["injected-script.js"],
-      "matches": ["https://cmp.technolife.com/*"]
     }
   ],
   "action": {
