@@ -107,8 +107,8 @@ const clickEvent = new MouseEvent('click', {
 });
 
 setTimeout(() => {
-  const button = document.querySelectorAll("button[type='button']")[0];
   setInterval(()=>{
-    button.dispatchEvent(clickEvent);
-  })
+    const button = document.querySelectorAll("button[type='button']")?.[0];
+    button?.dispatchEvent(clickEvent);
+  },50);
 },1000)

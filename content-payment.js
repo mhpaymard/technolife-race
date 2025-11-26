@@ -15,13 +15,37 @@ const CONFIG = {
   // Minimum recommended: 50ms (balance between speed and reliability)
   // If page uses React/Vue: 100ms safer
   // Plain HTML form: can try 30ms
-  SUBMIT_DELAY_MS: 50
+  SUBMIT_DELAY_MS: 50,
+  
+  // Delay between retries when checking if discount is applied (milliseconds)
+  RETRY_DELAY_MS: 200,
+  
+  // Maximum number of retries for checking discount application
+  MAX_RETRIES: 100
 };
 // =======================================================================
 
 console.log('Payment content script loaded');
 
 let codeInserted = false;
+
+// Click event for payment button
+const clickEvent = new MouseEvent('click', {
+  view: window,
+  bubbles: true,
+  cancelable: true
+});
+
+// Check if discount code has been applied successfully
+function isOffAvailable() {
+  const priceSectionDiv = document.querySelector("div.rounded-2xl.bg-white.p-8.pb-6.shadow-1200");
+  if (priceSectionDiv && priceSectionDiv.innerHTML.includes("کد تخفیف")) {
+    const paymentButton = [...document.querySelectorAll('button[type="button"')]?.filter(b => b?.innerHTML?.includes("پرداخت"))?.[0];
+    paymentButton?.dispatchEvent(clickEvent);
+    return true;
+  }
+  return false;
+}
 
 // Function to insert code into input and submit
 function insertCodeAndSubmit(code) {
@@ -50,18 +74,36 @@ function insertCodeAndSubmit(code) {
       if (submitButton) {
         submitButton.click();
         console.log('Submit button clicked');
-        codeInserted = true;
         
-        // Notify background that code was inserted
-        chrome.runtime.sendMessage({
-          type: 'CODE_INSERTED',
-          success: true
-        });
+        // Start checking if discount is applied every 300ms
+        let retryCount = 0;
+        const checkInterval = setInterval(() => {
+          const isApplied = isOffAvailable();
+          
+          if (isApplied) {
+            console.log('✅ Discount applied successfully!');
+            clearInterval(checkInterval);
+            codeInserted = true;
+            
+            chrome.runtime.sendMessage({
+              type: 'CODE_INSERTED',
+              success: true
+            });
+          } else if (retryCount < CONFIG.MAX_RETRIES) {
+            console.log('Discount not applied, clicking submit again...');
+            submitButton.click();
+            retryCount++;
+          } else {
+            console.warn('⚠️ Max retries reached');
+            clearInterval(checkInterval);
+          }
+        }, CONFIG.RETRY_DELAY_MS);
+        
       } else {
         console.warn('Submit button not found. Selector:', CONFIG.SUBMIT_BUTTON_SELECTOR);
       }
       
-    }, CONFIG.SUBMIT_DELAY_MS); // 100ms delay for minimal latency while ensuring reliability
+    }, CONFIG.SUBMIT_DELAY_MS);
     
   } else {
     console.warn('Code input field not found. Selector:', CONFIG.CODE_INPUT_SELECTOR);
