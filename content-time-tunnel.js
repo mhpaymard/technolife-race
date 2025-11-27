@@ -5,9 +5,9 @@
 const CONFIG = {
   // Input selector for DOM monitoring
   CODE_INPUT_SELECTOR: 'span.border.border-dashed',
-  
-  // Check interval in milliseconds (50ms = very fast, 20 checks per second)
-  CHECK_INTERVAL_MS: 50,
+
+  // Check interval in milliseconds (25ms = very fast, 40 checks per second)
+  CHECK_INTERVAL_MS: 25,
   
   // Stop monitoring after code is found and sent (true = more efficient)
   STOP_AFTER_SEND: true,
@@ -107,12 +107,82 @@ const clickEvent = new MouseEvent('click', {
   cancelable: true
 });
 
-setTimeout(() => {
-  setInterval(() => {
-    const button = document.querySelectorAll("button[type='button']")?.[0];
-    button?.classList?.remove("disabled:cursor-not-allowed");
-    button?.classList?.remove("disabled:opacity-50");
-    button?.removeAttribute("disabled");
-    button?.dispatchEvent(clickEvent);
-  }, 50);
-}, 1000);
+// Create floating button to start auto-click
+function createFloatingButton() {
+  const button = document.createElement('button');
+  button.id = 'technolife-auto-click-btn';
+  button.innerHTML = '🚀 Start Auto-Click';
+  
+  // Styling
+  Object.assign(button.style, {
+    position: 'fixed',
+    bottom: '20px',
+    right: '20px',
+    zIndex: '99999',
+    padding: '12px 20px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+    transition: 'all 0.3s ease'
+  });
+  
+  let autoClickInterval = null;
+  let isActive = false;
+  
+  button.addEventListener('click', () => {
+    isActive = !isActive;
+    
+    if (isActive) {
+      // Start auto-click
+      button.innerHTML = '⏸️ Stop Auto-Click';
+      button.style.backgroundColor = '#f44336';
+      
+      autoClickInterval = setInterval(() => {
+        const targetButton = document.querySelectorAll("button[type='button']")?.[0];
+        targetButton?.classList?.remove("disabled:cursor-not-allowed");
+        targetButton?.classList?.remove("disabled:opacity-50");
+        targetButton?.removeAttribute("disabled");
+        targetButton?.dispatchEvent(clickEvent);
+      }, 50);
+      
+      console.log('✅ Auto-click started');
+    } else {
+      // Stop auto-click
+      button.innerHTML = '🚀 Start Auto-Click';
+      button.style.backgroundColor = '#4CAF50';
+      
+      if (autoClickInterval) {
+        clearInterval(autoClickInterval);
+        autoClickInterval = null;
+      }
+      
+      console.log('⏸️ Auto-click stopped');
+    }
+  });
+  
+  // Hover effect
+  button.addEventListener('mouseenter', () => {
+    button.style.transform = 'scale(1.05)';
+    button.style.boxShadow = '0 6px 8px rgba(0,0,0,0.4)';
+  });
+  
+  button.addEventListener('mouseleave', () => {
+    button.style.transform = 'scale(1)';
+    button.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+  });
+  
+  document.body.appendChild(button);
+  console.log('✅ Floating button created');
+}
+
+// Wait for body to be available then create button
+if (document.body) {
+  createFloatingButton();
+} else {
+  document.addEventListener('DOMContentLoaded', createFloatingButton);
+}
