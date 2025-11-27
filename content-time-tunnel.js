@@ -131,6 +131,22 @@ function createFloatingButton() {
     transition: 'all 0.3s ease'
   });
   
+  // Right-click to add invalid code
+  button.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    const code = prompt('کد نامعتبر را وارد کنید:\n(این کد به لیست کدهای نادیده گرفته شده اضافه می‌شود)');
+    if (code && code.trim() !== '') {
+      const trimmedCode = code.trim();
+      if (!CONFIG.INVALID_CODES.includes(trimmedCode)) {
+        CONFIG.INVALID_CODES.push(trimmedCode);
+        alert(`✅ کد "${trimmedCode}" به لیست کدهای نامعتبر اضافه شد\n\nلیست فعلی:\n${CONFIG.INVALID_CODES.join(', ')}`);
+        console.log('Invalid codes updated:', CONFIG.INVALID_CODES);
+      } else {
+        alert(`⚠️ کد "${trimmedCode}" قبلاً در لیست موجود است`);
+      }
+    }
+  });
+  
   let autoClickInterval = null;
   let isActive = false;
   
