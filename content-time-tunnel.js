@@ -17,7 +17,7 @@ const CONFIG = {
   STOP_AFTER_SEND: true,
   
   // Invalid codes to ignore (continue searching if these values found)
-  INVALID_CODES: ['s', 'OIUYGS3547',"MHZJXU7SXAK5"]
+  INVALID_CODES: ['GLLZ5R4GGHY3', 'OIUYGS3547',"MHZJXU7SXAK5"]
 };
 // =======================================================================
 
