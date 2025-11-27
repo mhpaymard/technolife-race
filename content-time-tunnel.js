@@ -47,7 +47,7 @@ function injectInterceptor() {
 window.addEventListener('XHR_INTERCEPTED', (event) => {
   const { type, url, response, status } = event.detail;
   
-  console.log(`[${type.toUpperCase()} CAPTURED]`, url, response);
+  // console.log(`[${type.toUpperCase()} CAPTURED]`, url, response); // Disabled to reduce console clutter
   
   // Check if this is the voucher API response
   if (url.includes('time-tunnel/api/v1/Prize/voucher') && response?.data?.voucherCode) {
@@ -60,7 +60,7 @@ window.addEventListener('XHR_INTERCEPTED', (event) => {
                         code !== lastCodeSent;
     
     if (isValidCode) {
-      console.log('✅ Valid voucher code extracted from XHR:', code);
+      // console.log('✅ Valid voucher code extracted from XHR:', code); // Disabled
       lastCodeSent = code;
       
       // Send code to background script immediately
@@ -69,13 +69,13 @@ window.addEventListener('XHR_INTERCEPTED', (event) => {
         code: code.trim()
       }, (response) => {
         if (response && response.success) {
-          console.log('✅ Code sent to background successfully');
+          // console.log('✅ Code sent to background successfully'); // Disabled
         }
       });
     } else if (code && CONFIG.INVALID_CODES.includes(code.trim())) {
-      console.log('⚠️ Invalid code detected in XHR, ignoring:', code.trim());
+      // console.log('⚠️ Invalid code detected in XHR, ignoring:', code.trim()); // Disabled
     } else if (code === lastCodeSent) {
-      console.log('⚠️ Code already sent, ignoring duplicate:', code.trim());
+      // console.log('⚠️ Code already sent, ignoring duplicate:', code.trim()); // Disabled
     }
   }
 });

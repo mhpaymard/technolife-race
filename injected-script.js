@@ -45,7 +45,7 @@
           });
           
           // Also log with original console.log (if still works)
-          originalLog('[XHR INTERCEPTED]', requestURL, response);
+          // originalLog('[XHR INTERCEPTED]', requestURL, response); // Disabled to reduce console clutter
         } catch (e) {
           // Not JSON or error parsing
         }
@@ -75,7 +75,7 @@
         });
         
         // Also log with original console.log
-        originalLog('[FETCH INTERCEPTED]', url, data);
+        // originalLog('[FETCH INTERCEPTED]', url, data); // Disabled to reduce console clutter
       }).catch(() => {
         // Not JSON response
       });
@@ -84,5 +84,5 @@
     });
   };
   
-  originalLog('✅ XHR/Fetch interceptor injected successfully');
+  // originalLog('✅ XHR/Fetch interceptor injected successfully'); // Disabled to reduce console clutter
 })();
