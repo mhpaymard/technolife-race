@@ -23,7 +23,7 @@
         "https://cmp.technolife.com/time-tunnel"
       ],
       "js": ["content-time-tunnel.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     },
     {
       "matches": [
@@ -32,6 +32,12 @@
       ],
       "js": ["content-payment.js"],
       "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["injected-script.js"],
+      "matches": ["https://cmp.technolife.com/*"]
     }
   ],
   "action": {

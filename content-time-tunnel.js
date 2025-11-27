@@ -3,6 +3,10 @@
 
 // ==================== CONFIG - EDIT THESE SELECTORS ====================
 const CONFIG = {
+  // Enable/Disable monitoring methods
+  ENABLE_XHR_INTERCEPTION: true,   // Use XHR/Fetch interception (faster, more reliable)
+  ENABLE_DOM_MONITORING: false,     // Use DOM monitoring as fallback
+  
   // Input selector for DOM monitoring
   CODE_INPUT_SELECTOR: 'span.border.border-dashed',
 
@@ -22,8 +26,75 @@ console.log('Time-tunnel content script loaded');
 let lastCodeSent = null;
 let checkInterval = null;
 
+// ==================== XHR/FETCH INTERCEPTION ====================
+// Inject script into page context to intercept XHR/Fetch
+function injectInterceptor() {
+  if (!CONFIG.ENABLE_XHR_INTERCEPTION) {
+    console.log('⚠️ XHR interception disabled in CONFIG');
+    return;
+  }
+  
+  const script = document.createElement('script');
+  script.src = chrome.runtime.getURL('injected-script.js');
+  script.onload = function() {
+    this.remove();
+    console.log('✅ Interceptor script injected');
+  };
+  (document.head || document.documentElement).appendChild(script);
+}
+
+// Listen for intercepted XHR/Fetch responses via custom event
+window.addEventListener('XHR_INTERCEPTED', (event) => {
+  const { type, url, response, status } = event.detail;
+  
+  console.log(`[${type.toUpperCase()} CAPTURED]`, url, response);
+  
+  // Check if this is the voucher API response
+  if (url.includes('time-tunnel/api/v1/Prize/voucher') && response?.data?.voucherCode) {
+    const code = response.data.voucherCode;
+    
+    // Check if code is valid (not empty, not in invalid list, and not already sent)
+    const isValidCode = code && 
+                        code.trim() !== '' && 
+                        !CONFIG.INVALID_CODES.includes(code.trim()) &&
+                        code !== lastCodeSent;
+    
+    if (isValidCode) {
+      console.log('✅ Valid voucher code extracted from XHR:', code);
+      lastCodeSent = code;
+      
+      // Send code to background script immediately
+      chrome.runtime.sendMessage({
+        type: 'CODE_FOUND',
+        code: code.trim()
+      }, (response) => {
+        if (response && response.success) {
+          console.log('✅ Code sent to background successfully');
+        }
+      });
+    } else if (code && CONFIG.INVALID_CODES.includes(code.trim())) {
+      console.log('⚠️ Invalid code detected in XHR, ignoring:', code.trim());
+    } else if (code === lastCodeSent) {
+      console.log('⚠️ Code already sent, ignoring duplicate:', code.trim());
+    }
+  }
+});
+
+// Inject as early as possible
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', injectInterceptor);
+} else {
+  injectInterceptor();
+}
+// ================================================================
+
 // Start monitoring DOM
 function startMonitoring() {
+  if (!CONFIG.ENABLE_DOM_MONITORING) {
+    console.log('⚠️ DOM monitoring disabled in CONFIG');
+    return;
+  }
+  
   // Clear any existing interval
   if (checkInterval) {
     clearInterval(checkInterval);
@@ -31,7 +102,7 @@ function startMonitoring() {
   
   console.log('Starting DOM monitoring...');
   
-  // Check every 50ms for the input element
+  // Check every interval for the input element
   checkInterval = setInterval(() => {
 
     const codeInput = document.querySelector(CONFIG.CODE_INPUT_SELECTOR);
@@ -73,15 +144,17 @@ function startMonitoring() {
   }, CONFIG.CHECK_INTERVAL_MS);
 }
 
-// Initialize when page loads
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', startMonitoring);
-} else {
-  startMonitoring();
+// Initialize DOM monitoring when page loads
+if (CONFIG.ENABLE_DOM_MONITORING) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startMonitoring);
+  } else {
+    startMonitoring();
+  }
+  
+  // Also start monitoring after a short delay
+  setTimeout(startMonitoring, 500);
 }
-
-// Also start monitoring after a short delay
-setTimeout(startMonitoring, 500);
 
 // Listen for messages from background (optional - for future enhancements)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
