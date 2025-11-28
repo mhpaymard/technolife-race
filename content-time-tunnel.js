@@ -266,6 +266,57 @@ function createFloatingButton() {
   });
   
   document.body.appendChild(button);
+  
+  // ==================== DYNAMIC PASSWORD INPUT ====================
+  const passInput = document.createElement('input');
+  passInput.type = 'text';
+  passInput.placeholder = 'رمز دوم (پویا)';
+  passInput.id = 'technolife-dynamic-pass';
+  
+  Object.assign(passInput.style, {
+    position: 'fixed',
+    bottom: '70px', // Above the button
+    right: '20px',
+    zIndex: '99999',
+    padding: '10px',
+    width: '140px',
+    backgroundColor: 'white',
+    color: '#333',
+    border: '2px solid #4CAF50',
+    borderRadius: '8px',
+    fontSize: '14px',
+    textAlign: 'center',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.2)',
+    transition: 'all 0.3s ease'
+  });
+
+  // Load saved password if any (optional, mostly for testing)
+  chrome.storage.local.get(['dynamicPassword'], (result) => {
+    if (result.dynamicPassword) {
+      passInput.value = result.dynamicPassword;
+    }
+  });
+
+  // Save on input
+  passInput.addEventListener('input', (e) => {
+    const val = e.target.value;
+    chrome.storage.local.set({ 'dynamicPassword': val }, () => {
+      console.log('رمز دوم ذخیره شد:', val);
+      
+      // Visual feedback
+      passInput.style.borderColor = '#4CAF50'; // Green border
+      passInput.style.backgroundColor = '#e8f5e9'; // Light green background
+      
+      // Reset background after 300ms
+      setTimeout(() => {
+        passInput.style.backgroundColor = 'white';
+      }, 300);
+    });
+  });
+
+  document.body.appendChild(passInput);
+  // ================================================================
+
   console.log('✅ Floating button created');
 }
 

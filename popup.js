@@ -43,9 +43,48 @@ document.addEventListener('DOMContentLoaded', () => {
   clearBtn.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'CLEAR_CODE' }, () => {
       codeDisplayEl.textContent = 'منتظر کد...';
-      alert('کد پاک شد');
+      // alert('کد پاک شد');
     });
   });
+
+  // ==================== CARD SETTINGS ====================
+  const cardNumberInput = document.getElementById('cardNumber');
+  const cvv2Input = document.getElementById('cvv2');
+  const expMonthInput = document.getElementById('expMonth');
+  const expYearInput = document.getElementById('expYear');
+  const saveCardBtn = document.getElementById('saveCardBtn');
+
+  // Load saved settings
+  chrome.storage.local.get(['cardInfo'], (result) => {
+    if (result.cardInfo) {
+      cardNumberInput.value = result.cardInfo.cardNumber || '';
+      cvv2Input.value = result.cardInfo.cvv2 || '';
+      expMonthInput.value = result.cardInfo.expMonth || '';
+      expYearInput.value = result.cardInfo.expYear || '';
+    }
+  });
+
+  // Save settings
+  saveCardBtn.addEventListener('click', () => {
+    const cardInfo = {
+      cardNumber: cardNumberInput.value,
+      cvv2: cvv2Input.value,
+      expMonth: expMonthInput.value,
+      expYear: expYearInput.value
+    };
+
+    chrome.storage.local.set({ 'cardInfo': cardInfo }, () => {
+      const originalText = saveCardBtn.textContent;
+      saveCardBtn.textContent = '✅ ذخیره شد!';
+      saveCardBtn.style.background = '#388E3C';
+      
+      setTimeout(() => {
+        saveCardBtn.textContent = originalText;
+        saveCardBtn.style.background = '#4CAF50';
+      }, 2000);
+    });
+  });
+  // =======================================================
   
   // Initial check
   checkStatus();

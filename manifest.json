@@ -32,6 +32,14 @@
       ],
       "js": ["content-payment.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://pec.shaparak.ir/*",
+        "https://bpm.shaparak.ir/*"
+      ],
+      "js": ["content-gateway.js"],
+      "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [

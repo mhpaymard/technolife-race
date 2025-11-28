@@ -77,6 +77,53 @@
     .btn:hover {
       background: rgba(255, 255, 255, 0.3);
     }
+
+    .card-settings {
+      margin-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 15px;
+    }
+
+    .input-group {
+      margin-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 4px;
+      opacity: 0.9;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255,255,255,0.9);
+      color: #333;
+      box-sizing: border-box;
+      font-family: monospace;
+      text-align: center;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .col {
+      flex: 1;
+    }
+
+    .save-btn {
+      background: #4CAF50;
+      margin-top: 15px;
+    }
+    
+    .save-btn:hover {
+      background: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -91,11 +138,39 @@
       منتظر کد...
     </div>
     
-    <div class="info">
-      این افزونه به طور خودکار کد تایید را از صفحه time-tunnel به صفحه payment منتقل می‌کند.
-    </div>
-    
     <button class="btn" id="clearBtn">پاک کردن کد</button>
+
+    <div class="card-settings">
+      <h3 style="font-size:14px; margin-bottom:10px; text-align:center;">💳 تنظیمات کارت بانکی</h3>
+      
+      <div class="input-group">
+        <label>شماره کارت (۱۶ رقم)</label>
+        <input type="text" id="cardNumber" maxlength="16" placeholder="0000000000000000">
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <div class="input-group">
+            <label>CVV2</label>
+            <input type="text" id="cvv2" maxlength="4" placeholder="1234">
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <label>ماه</label>
+            <input type="text" id="expMonth" maxlength="2" placeholder="00">
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <label>سال</label>
+            <input type="text" id="expYear" maxlength="2" placeholder="00">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn save-btn" id="saveCardBtn">💾 ذخیره اطلاعات کارت</button>
+    </div>
   </div>
   
   <script src="popup.js"></script>
